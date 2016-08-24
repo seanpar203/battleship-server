@@ -1,4 +1,68 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+# -*- coding: utf-8 -*-
+""" Web Time Analytics Models.
 
-APP = Flask(__name__)
+This module defines the Models and their relationships.
+"""
+from app import db
+
+
+class User(db.Model):
+	""" Basic user class that stores unique tokens. """
+
+	# Attributes
+	id = db.Column(db.Integer, primary_key=True)
+	token = db.Column(db.String(), unique=True)
+
+	# Methods
+	def __init__(self, token):
+		""" Creates new User.
+
+		Args:
+				token (str): A uuid string.
+		"""
+		self.token = token
+
+	def __str__(self):
+		""" Shows User id.
+
+		Returns:
+				str: String representation of User Object.
+		"""
+		return '<User id:{0}>'.format(self.id)
+
+
+class TimeSpent(db.Model):
+	""" Model for storing Users time spent(host, minutes) """
+
+	# Attributes
+	id = db.Column(db.Integer, primary_key=True)
+	minutes = db.Column(db.BigInteger)
+	host = db.Column(db.String())
+
+	# Relations
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	user = db.relationship(
+		'User', backref=db.backref('time_spent', lazy='dynamic')
+	)
+
+	# Built-in Override Methods.
+	def __init__(self, minutes, host, user):
+		""" Creates a new Time Spent row creating a relationship to User.
+
+		Args:
+			minutes (int): Value of time spent on web page.
+			host (str): Value of host name of web page.
+			user (object): User who was on web page.
+		"""
+		self.minutes = minutes
+		self.host = host
+		self.user = user
+
+	def __str__(self):
+		""" Returns a Time Spent Id
+
+		Returns:
+			str: String representation of TimeSpent Object.
+		"""
+		return '<TimeSpent id:{0}>'.format(self.id)
+	
