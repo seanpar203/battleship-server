@@ -22,7 +22,7 @@ class User(db.Model):
 		"""
 		self.token = token
 
-	def __str__(self):
+	def __repr__(self):
 		""" Returns simple object representation.
 
 		Returns:
@@ -58,7 +58,7 @@ class TimeSpent(db.Model):
 		self.host = host
 		self.user = user
 
-	def __str__(self):
+	def __repr__(self):
 		""" Returns simple object representation.
 
 		Returns:

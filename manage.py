@@ -9,14 +9,14 @@ from flask_script import Manager
 
 from app import app, db
 
-# Load Current Config Settings.
+# Set Current Environment Settings.
 app.config.from_object(os.environ['APP_SETTINGS'])
 
 # Create Instances.
 migrate = Migrate(app, db)
 manager = Manager(app)
 
-# Add method to manager.
+# Add method.
 manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':
