@@ -32,8 +32,8 @@ class StageConfig(Config):
     """ Staging settings class, inherits from Config.
 
     Attributes:
-            DEBUG (bool): Enables or disables debugging mode.
-            DEVELOPMENT (bool): Enables development mode.
+        DEBUG (bool): Enables or disables debugging mode.
+        DEVELOPMENT (bool): Enables development mode.
     """
     DEBUG = True
     DEVELOPMENT = True
