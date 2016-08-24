@@ -13,20 +13,20 @@ class User(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	token = db.Column(db.String(), unique=True)
 
-	# Methods
+	# Built-in Override Methods.
 	def __init__(self, token):
 		""" Creates new User.
 
 		Args:
-				token (str): A uuid string.
+			token (str): A uuid string.
 		"""
 		self.token = token
 
 	def __str__(self):
-		""" Shows User id.
+		""" Returns simple object representation.
 
 		Returns:
-				str: String representation of User Object.
+			str: String representation of User Object.
 		"""
 		return '<User id:{0}>'.format(self.id)
 
@@ -47,7 +47,7 @@ class TimeSpent(db.Model):
 
 	# Built-in Override Methods.
 	def __init__(self, minutes, host, user):
-		""" Creates a new Time Spent row creating a relationship to User.
+		""" Creates TimeSpent Object with relationship to User.
 
 		Args:
 			minutes (int): Value of time spent on web page.
@@ -59,10 +59,9 @@ class TimeSpent(db.Model):
 		self.user = user
 
 	def __str__(self):
-		""" Returns a Time Spent Id
+		""" Returns simple object representation.
 
 		Returns:
 			str: String representation of TimeSpent Object.
 		"""
-		return '<TimeSpent id:{0}>'.format(self.id)
-	
+		return '<TimeSpent host:{0}>'.format(self.host)
