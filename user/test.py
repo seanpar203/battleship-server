@@ -3,10 +3,11 @@ from tests.test_base import BaseTestCase
 from tests.test_data import TEST_DATA, create_test_data
 from time_spent.models import TimeSpent
 from user.models import UserToken
+from host.models import HostName
 
 
 class UserModelTests(BaseTestCase):
-	"""User Unit Tests """
+	"""UserToken Unit Tests """
 	token = TEST_DATA['user']
 	time = TEST_DATA['time']
 	host = TEST_DATA['host']
@@ -40,3 +41,24 @@ class UserModelTests(BaseTestCase):
 
 		# Verify one-to-many relationship
 		assert user.time_spent.count() == 1
+
+	def test_host_access_through_time_spent(self):
+		""" Tests accessing HostName host attribute from User object
+		through TimeSpent Object.
+		"""
+		user = UserToken(self.token)
+		time = TimeSpent(self.time)
+		host = HostName(self.host)
+
+		# Make Relationship
+		user.time_spent.append(time)
+		time.host.append(host)
+
+		# Add & Save
+		db.session.add(user)
+		db.session.add(time)
+		db.session.add(host)
+		db.session.commit()
+
+		# Verify accessing host through TimeSpent relationship.
+		assert user.time_spent.first().host.first().host == self.host

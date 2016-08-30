@@ -5,8 +5,8 @@ from tests.test_data import TEST_DATA, create_test_data
 from time_spent.models import TimeSpent
 
 
-class UserModelTests(BaseTestCase):
-	"""User Unit Tests """
+class TimeModelTests(BaseTestCase):
+	"""TimeSpent Unit Tests """
 	minutes = TEST_DATA['time']
 	host = TEST_DATA['host']
 
@@ -53,4 +53,5 @@ class UserModelTests(BaseTestCase):
 		db.session.add(host)
 		db.session.commit()
 
+		# Verify access to HotName host attribute.
 		assert time.host.first().host == self.host
