@@ -12,7 +12,7 @@ class UserModelTests(BaseTestCase):
 	host = TEST_DATA['host']
 
 	def test_can_create_user(self):
-		""" Tests that a user is actually created. """
+		""" Tests that a User is actually created. """
 		user = create_test_data(data=self.token, model=UserToken, retrn=True)
 
 		# Verify user is in db.
