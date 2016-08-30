@@ -1,5 +1,7 @@
-""" Test Data
+""" Test Data & Methods.
 
+This module represents the test data and methods to be
+used in python packages test.py,
 """
 from app import db
 
