@@ -1,8 +1,8 @@
 from app import db
+from host.models import HostName
 from tests.test_base import BaseTestCase
 from tests.test_data import TEST_DATA, create_test_data
 from time_spent.models import TimeSpent
-from host.models import HostName
 
 
 class UserModelTests(BaseTestCase):
@@ -39,3 +39,18 @@ class UserModelTests(BaseTestCase):
 
 		# Verify one-to-many relationship
 		assert time.host.count() == 1
+
+	def test_host_name_access(self):
+		""" Tests that a TimeSpent object has access to HostName host attribute. """
+		time = TimeSpent(self.minutes)
+		host = HostName(self.host)
+
+		# Make Relationship
+		time.host.append(host)
+
+		# Add & Save
+		db.session.add(time)
+		db.session.add(host)
+		db.session.commit()
+
+		assert time.host.first().host == self.host
