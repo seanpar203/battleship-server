@@ -7,7 +7,7 @@ import os
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
-from app import app, db
+from wta_app.app import app, db
 
 # Set Current Environment Settings.
 app.config.from_object(os.environ['APP_SETTINGS'])

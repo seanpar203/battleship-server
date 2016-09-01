@@ -6,8 +6,8 @@ Object on instantiation as a reference to exactly where the
 time was spent.
 
 """
-
-from app import db
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
 
 class TimeSpent(db.Model):

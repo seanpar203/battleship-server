@@ -38,3 +38,5 @@ class TestConfig(Config):
 	SQLALCHEMY_ECHO = True
 	WTF_CSRF_ENABLED = False
 	SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' # + join(BASE_DIR, 'wta_app.db')
+
+
