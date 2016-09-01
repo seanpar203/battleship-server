@@ -1,9 +1,8 @@
-from wta_app.app import db
+from wta_app.host.models import HostName
 from wta_app.tests.test_base import BaseTestCase
 from wta_app.tests.test_data import TEST_DATA, create_test_data
 from wta_app.time_spent.models import TimeSpent
-from wta_app.user.models import UserToken
-from wta_app.host.models import HostName
+from wta_app.user.models import UserToken, db
 
 
 class UserModelTests(BaseTestCase):

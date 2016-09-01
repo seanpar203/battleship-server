@@ -7,14 +7,15 @@ backend.
 
 from flask_testing import TestCase
 
-from app import app, db
+from wta_app import create_app
+from wta_app.user.models import db
 
 
 class BaseTestCase(TestCase):
     """ Testing for flask routes """
 
     def create_app(self):
-        app.config.from_object('config.TestConfig')
+        app = create_app()
         return app
 
     def setUp(self):
