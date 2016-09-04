@@ -1,6 +1,6 @@
 """ Module to handle different settings for different environments. """
 from os import environ
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname
 
 BASE_DIR = abspath(dirname(__file__))
 
@@ -12,6 +12,7 @@ class Config(object):
 	CSRF_ENABLED = False
 	SECRET_KEY = 'flask-session-insecure-secret-key'
 	SQLALCHEMY_DATABASE_URI = environ['DATABASE_URL']
+	SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProdConfig(Config):
@@ -37,6 +38,4 @@ class TestConfig(Config):
 	HASH_ROUNDS = 1
 	SQLALCHEMY_ECHO = True
 	WTF_CSRF_ENABLED = False
-	SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' # + join(BASE_DIR, 'wta_app.db')
-
-
+	SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'

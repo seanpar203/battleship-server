@@ -9,19 +9,6 @@ import coverage
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
-from wta_app import app, db
-from wta_app.models import HostName
-from wta_app.models import TimeSpent
-from wta_app.models import UserToken
-
-# Set Current Environment Settings.
-app_settings = os.getenv('APP_SETTINGS', 'wta_app.config.DevConfig')
-app.config.from_object(app_settings)
-
-# Create Instances.
-migrate = Migrate(app, db)
-manager = Manager(app)
-
 COV = coverage.coverage(
 		branch=True,
 		include='wta_app/*',
@@ -33,6 +20,13 @@ COV = coverage.coverage(
 )
 
 COV.start()
+
+from wta_app import app, db
+from wta_app.models import UserToken, HostName, TimeSpent
+
+# Create Instances.
+migrate = Migrate(app, db)
+manager = Manager(app)
 
 # Add method.
 manager.add_command('db', MigrateCommand)

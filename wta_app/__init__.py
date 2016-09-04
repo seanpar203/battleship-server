@@ -2,7 +2,6 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from wta_app.user.views import users
 
 # Config
 app = Flask(__name__)
@@ -13,4 +12,5 @@ app.config.from_object(app_settings)
 db = SQLAlchemy(app)
 
 # Blueprints
+from wta_app.user.views import users
 app.register_blueprint(users)
