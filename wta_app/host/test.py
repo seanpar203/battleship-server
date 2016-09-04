@@ -1,4 +1,5 @@
-from wta_app.host.models import HostName, db
+from wta_app import db
+from wta_app.models import HostName
 from wta_app.tests.test_base import BaseTestCase
 from wta_app.tests.test_data import TEST_DATA, create_test_data
 
@@ -10,9 +11,12 @@ class HostModelTests(BaseTestCase):
 	host = TEST_DATA['host']
 
 	def test_can_host_name(self):
-		""" Tests that a User is actually created. """
-		host_name = create_test_data(data=self.host, model=HostName,
-		                             retrn=True)
+		""" Tests that a HostName is actually created. """
+		host_name = create_test_data(
+				data=self.host,
+				model=HostName,
+				retrn=True
+		)
 
 		# Verify host is in db.
 		assert host_name in db.session

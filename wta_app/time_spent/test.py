@@ -1,7 +1,7 @@
-from wta_app.host.models import HostName, db
+from wta_app import db
+from wta_app.models import HostName, TimeSpent
 from wta_app.tests.test_base import BaseTestCase
 from wta_app.tests.test_data import TEST_DATA, create_test_data
-from wta_app.time_spent.models import TimeSpent
 
 
 class TimeModelTests(BaseTestCase):
@@ -11,14 +11,22 @@ class TimeModelTests(BaseTestCase):
 
 	def test_can_create_time(self):
 		""" Tests that a TimeSpent is actually created. """
-		time = create_test_data(data=self.minutes, model=TimeSpent, retrn=True)
+		time = create_test_data(
+				data=self.minutes,
+				model=TimeSpent,
+				retrn=True
+		)
 
 		# Verify user is in db.
 		assert time in db.session
 
 	def test_correct_time(self):
 		""" Tests that the minutes is the same as the one passed in. """
-		time = create_test_data(data=self.minutes, model=TimeSpent, retrn=True)
+		time = create_test_data(
+				data=self.minutes,
+				model=TimeSpent,
+				retrn=True
+		)
 
 		# Verify user has correct token.
 		assert time.minutes == self.minutes
@@ -40,7 +48,8 @@ class TimeModelTests(BaseTestCase):
 		assert time.host.count() == 1
 
 	def test_host_name_access(self):
-		""" Tests that a TimeSpent object has access to HostName host attribute. """
+		""" Tests that a TimeSpent object has access to HostName host
+		attribute. """
 		time = TimeSpent(self.minutes)
 		host = HostName(self.host)
 

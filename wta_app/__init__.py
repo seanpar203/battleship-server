@@ -1,23 +1,16 @@
 import os
 
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from wta_app.user.views import users
 
-from wta_app.host.models import HostName
-from wta_app.time_spent.models import TimeSpent
-from wta_app.user.models import UserToken
+# Config
+app = Flask(__name__)
+app_settings = os.getenv('APP_SETTINGS', 'wta_app.config.DevConfig')
+app.config.from_object(app_settings)
 
+# DB Connection
+db = SQLAlchemy(app)
 
-def create_app():
-	app = Flask(__name__)
-	app.config.from_object(os.environ['APP_SETTINGS'])
-	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-	# Create DB Connection.
-	from wta_app.user.models import db
-	db.init_app(app)
-
-	# Register blueprints.
-	from wta_app.user.views import users
-	app.register_blueprint(users)
-
-	return app
+# Blueprints
+app.register_blueprint(users)

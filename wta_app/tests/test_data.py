@@ -3,7 +3,7 @@
 This module represents the test data and methods to be
 used in python packages test.py,
 """
-from wta_app.user.models import db
+from wta_app import db
 
 TEST_USER_TOKEN = '123456'
 TEST_TIME_SPENT = 10
