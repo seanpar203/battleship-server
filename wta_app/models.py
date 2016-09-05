@@ -36,9 +36,7 @@ class UserToken(db.Model):
 		if user is not None:
 			return user
 		else:
-			instance = cls(token=token)
-			db.session.add(instance)
-			db.session.commit()
+			instance = cls(token)
 			return instance
 
 
@@ -81,13 +79,13 @@ class HostName(db.Model):
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
-	host = db.Column(db.String(), unique=True)
+	host_name = db.Column(db.String(), unique=True)
 
 	# Relations
 	time_spent_id = db.Column(db.Integer, db.ForeignKey('time_spent.id'))
 
 	# Built-in Overrides
-	def __init__(self, host):
+	def __init__(self, host_name):
 		""" Create new instance of Host class.
 
 		Notes:
@@ -104,21 +102,19 @@ class HostName(db.Model):
 			reddit.com
 
 		Args:
-			host (str): Value of the active tab host name.
+			host_name (str): Value of the active tab host name.
 		"""
-		self.host = host
+		self.host_name = host_name
 
 	def __str__(self):
 		""" Returns Object string representation. """
 		return '<Host {}>'.format(self.host)
 
 	@classmethod
-	def get_or_create(cls, host):
-		host = cls.query.filter_by(host=host).first()
+	def get_or_create(cls, host_name):
+		host = cls.query.filter_by(host_name=host_name).first()
 		if host is not None:
 			return host
 		else:
-			instance = cls(host=host)
-			db.session.add(instance)
-			db.session.commit()
+			instance = cls(host_name)
 			return instance
