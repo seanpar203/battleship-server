@@ -30,6 +30,51 @@ class UserToken(db.Model):
 		"""
 		return '<User {}>'.format(self.id)
 
+	@classmethod
+	def get_or_create(cls, token):
+		user = cls.query.filter_by(token=token).first()
+		if user is not None:
+			return user
+		else:
+			instance = cls(token=token)
+			db.session.add(instance)
+			db.session.commit()
+			return instance
+
+
+class TimeSpent(db.Model):
+	""" Model for storing Users time spent(host, minutes) """
+
+	# Attributes
+	id = db.Column(db.Integer, primary_key=True)
+	seconds = db.Column(db.BigInteger)
+
+	# Relations
+	user_id = db.Column(db.Integer, db.ForeignKey('user_token.id'))
+	host = db.relationship('HostName', backref='time_spent', lazy='dynamic')
+
+	# Built-in Override Methods.
+	def __init__(self, seconds):
+		""" Creates new TimeSpent with amount of minutes.
+
+		Notes:
+			This model has a many-to-one relationship with the
+			UserToken model and a one-to-many relationship with the
+			HostName model.
+
+		Args:
+			seconds (int): Value of time spent on active web page.
+		"""
+		self.seconds = seconds
+
+	def __str__(self):
+		""" Returns Object string representation.
+
+		Returns:
+			str: String representation of TimeSpent Object.
+		"""
+		return '<TimeSpent {}>'.format(self.minutes)
+
 
 class HostName(db.Model):
 	""" Model for storing User's active tab host name. """
@@ -67,36 +112,13 @@ class HostName(db.Model):
 		""" Returns Object string representation. """
 		return '<Host {}>'.format(self.host)
 
-
-class TimeSpent(db.Model):
-	""" Model for storing Users time spent(host, minutes) """
-
-	# Attributes
-	id = db.Column(db.Integer, primary_key=True)
-	minutes = db.Column(db.BigInteger)
-
-	# Relations
-	user_id = db.Column(db.Integer, db.ForeignKey('user_token.id'))
-	host = db.relationship('HostName', backref='time_spent', lazy='dynamic')
-
-	# Built-in Override Methods.
-	def __init__(self, minutes):
-		""" Creates new TimeSpent with amount of minutes.
-
-		Notes:
-			This model has a many-to-one relationship with the
-			UserToken model and a one-to-many relationship with the
-			HostName model.
-
-		Args:
-			minutes (int): Value of time spent on active web page.
-		"""
-		self.minutes = minutes
-
-	def __str__(self):
-		""" Returns Object string representation.
-
-		Returns:
-			str: String representation of TimeSpent Object.
-		"""
-		return '<TimeSpent {}>'.format(self.minutes)
+	@classmethod
+	def get_or_create(cls, host):
+		host = cls.query.filter_by(host=host).first()
+		if host is not None:
+			return host
+		else:
+			instance = cls(host=host)
+			db.session.add(instance)
+			db.session.commit()
+			return instance
