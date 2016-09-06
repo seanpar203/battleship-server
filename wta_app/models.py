@@ -4,6 +4,8 @@ from wta_app import db
 class UserToken(db.Model):
 	""" Basic token class that stores unique tokens. """
 
+	__tablename__ = 'user'
+
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
 	token = db.Column(db.String(), unique=True)
@@ -40,16 +42,30 @@ class UserToken(db.Model):
 			return instance
 
 
+time_hosts = db.Table(
+		'time_hosts',
+		db.Column('time_id', db.Integer, db.ForeignKey('time.time_id')),
+		db.Column('host_id', db.Integer, db.ForeignKey('host.host_id'))
+)
+
+
 class TimeSpent(db.Model):
 	""" Model for storing Users time spent(host, minutes) """
 
+	__tablename__ = 'time'
+
 	# Attributes
-	id = db.Column(db.Integer, primary_key=True)
+	time_id = db.Column(db.Integer, primary_key=True)
 	seconds = db.Column(db.BigInteger)
 
 	# Relations
-	user_id = db.Column(db.Integer, db.ForeignKey('user_token.id'))
-	host = db.relationship('HostName', backref='time_spent', lazy='dynamic')
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	host = db.relationship(
+			'HostName',
+			secondary=time_hosts,
+			backref='time_spent',
+			lazy='dynamic'
+	)
 
 	# Built-in Override Methods.
 	def __init__(self, seconds):
@@ -77,12 +93,11 @@ class TimeSpent(db.Model):
 class HostName(db.Model):
 	""" Model for storing User's active tab host name. """
 
-	# Attributes
-	id = db.Column(db.Integer, primary_key=True)
-	host_name = db.Column(db.String(), unique=True)
+	__tablename__ = 'host'
 
-	# Relations
-	time_spent_id = db.Column(db.Integer, db.ForeignKey('time_spent.id'))
+	# Attributes
+	host_id = db.Column(db.Integer, primary_key=True)
+	host_name = db.Column(db.String(), unique=True)
 
 	# Built-in Overrides
 	def __init__(self, host_name):
