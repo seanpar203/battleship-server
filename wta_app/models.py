@@ -43,10 +43,10 @@ class UserToken(db.Model):
 			return instance
 
 
-time_hosts = db.Table(
-		'time_hosts',
-		db.Column('time_id', db.Integer, db.ForeignKey('time.time_id')),
-		db.Column('host_id', db.Integer, db.ForeignKey('host.host_id'))
+host_times = db.Table(
+		'host_time',
+		db.Column('time_id', db.Integer, db.ForeignKey('time.id')),
+		db.Column('host_id', db.Integer, db.ForeignKey('host.id'))
 )
 
 
@@ -57,14 +57,14 @@ class TimeSpent(db.Model):
 
 	# Attributes
 	day = db.Column(db.Date)
-	time_id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer, primary_key=True)
 	seconds = db.Column(db.BigInteger)
 
 	# Relations
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	host = db.relationship(
 			'HostName',
-			secondary=time_hosts,
+			secondary=host_times,
 			backref='time_spent',
 			lazy='dynamic'
 	)
@@ -99,7 +99,7 @@ class HostName(db.Model):
 	__tablename__ = 'host'
 
 	# Attributes
-	host_id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer, primary_key=True)
 	host_name = db.Column(db.String(), unique=True)
 
 	# Built-in Overrides
