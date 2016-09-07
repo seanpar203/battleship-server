@@ -90,7 +90,7 @@ class TimeSpent(db.Model):
 		Returns:
 			str: String representation of TimeSpent Object.
 		"""
-		return '<TimeSpent {}>'.format(self.minutes)
+		return '<TimeSpent {}>'.format(self.seconds)
 
 
 class HostName(db.Model):

@@ -1,13 +1,13 @@
 """empty message
 
-Revision ID: 5669bba2c9a4
+Revision ID: 1716436bfeb5
 Revises: None
-Create Date: 2016-09-05 20:07:27.132630
+Create Date: 2016-09-07 14:03:48.913478
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '5669bba2c9a4'
+revision = '1716436bfeb5'
 down_revision = None
 
 from alembic import op
@@ -29,6 +29,7 @@ def upgrade():
     sa.UniqueConstraint('token')
     )
     op.create_table('time',
+    sa.Column('day', sa.Date(), nullable=True),
     sa.Column('time_id', sa.Integer(), nullable=False),
     sa.Column('seconds', sa.BigInteger(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),

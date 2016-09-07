@@ -10,3 +10,8 @@ def add_then_commit(*args):
 	for arg in args:
 		db.session.add(arg)
 	db.session.commit()
+
+
+def unique_host_names(times):
+	for time in times:
+		yield time.host.first().host_name

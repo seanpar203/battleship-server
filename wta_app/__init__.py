@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 # Config
 app = Flask(__name__)
+
 CORS(app)
 app_settings = os.getenv('APP_SETTINGS', 'wta_app.config.DevConfig')
 app.config.from_object(app_settings)
