@@ -1,4 +1,5 @@
 from wta_app import db
+from datetime import date
 
 
 class UserToken(db.Model):
@@ -55,6 +56,7 @@ class TimeSpent(db.Model):
 	__tablename__ = 'time'
 
 	# Attributes
+	day = db.Column(db.Date)
 	time_id = db.Column(db.Integer, primary_key=True)
 	seconds = db.Column(db.BigInteger)
 
@@ -80,6 +82,7 @@ class TimeSpent(db.Model):
 			seconds (int): Value of time spent on active web page.
 		"""
 		self.seconds = seconds
+		self.day = date.isoformat(date.today())
 
 	def __str__(self):
 		""" Returns Object string representation.
