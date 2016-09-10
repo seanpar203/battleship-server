@@ -56,8 +56,8 @@ class TimeSpent(db.Model):
 	__tablename__ = 'time'
 
 	# Attributes
-	day = db.Column(db.Date)
 	id = db.Column(db.Integer, primary_key=True)
+	day = db.Column(db.Date)
 	seconds = db.Column(db.BigInteger)
 
 	# Relations
