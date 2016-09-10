@@ -1,19 +1,19 @@
 from wta_app import db
-from wta_app.models import HostName, TimeSpent
+from wta_app.models import Host, Time
 from wta_app.tests.test_base import BaseTestCase
 from wta_app.tests.test_data import TEST_DATA, create_test_data
 
 
 class TimeModelTests(BaseTestCase):
-	"""TimeSpent Unit Tests """
-	minutes = TEST_DATA['time']
+	"""Time Unit Tests """
+	seconds = TEST_DATA['time']
 	host = TEST_DATA['host']
 
 	def test_can_create_time(self):
-		""" Tests that a TimeSpent is actually created. """
+		""" Tests that a Time is actually created. """
 		time = create_test_data(
-				data=self.minutes,
-				model=TimeSpent,
+				data=self.seconds,
+				model=Time,
 				retrn=True
 		)
 
@@ -21,20 +21,20 @@ class TimeModelTests(BaseTestCase):
 		assert time in db.session
 
 	def test_correct_time(self):
-		""" Tests that the minutes is the same as the one passed in. """
+		""" Tests that the seconds is the same as the one passed in. """
 		time = create_test_data(
-				data=self.minutes,
-				model=TimeSpent,
+				data=self.seconds,
+				model=Time,
 				retrn=True
 		)
 
 		# Verify user has correct token.
-		assert time.minutes == self.minutes
+		assert time.seconds == self.seconds
 
 	def test_host_relationship(self):
-		""" Tests that a one-to-many relationship exists with HostName. """
-		time = TimeSpent(self.minutes)
-		host = HostName(self.host)
+		""" Tests that a one-to-many relationship exists with Host. """
+		time = Time(self.seconds)
+		host = Host(self.host)
 
 		# Make Relationship
 		time.host.append(host)
@@ -48,10 +48,10 @@ class TimeModelTests(BaseTestCase):
 		assert time.host.count() == 1
 
 	def test_host_name_access(self):
-		""" Tests that a TimeSpent object has access to HostName host
+		""" Tests that a Time object has access to Host host
 		attribute. """
-		time = TimeSpent(self.minutes)
-		host = HostName(self.host)
+		time = Time(self.seconds)
+		host = Host(self.host)
 
 		# Make Relationship
 		time.host.append(host)
