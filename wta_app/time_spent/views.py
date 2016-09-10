@@ -1,8 +1,11 @@
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
+from wta_app import db
 
-from wta_app.helpers import add_then_commit, unique_host_names
-from wta_app.models import HostName, TimeSpent, UserToken
+from sqlalchemy import func
+
+from wta_app.helpers import add_then_commit, results_to_dict
+from wta_app.models import HostName, TimeSpent, UserToken, host_times
 
 times = Blueprint('time', __name__, url_prefix='/api')
 
@@ -13,30 +16,54 @@ BAD_REQUEST = 400
 @times.route('/time/', methods=(['POST', 'GET']))
 @cross_origin()
 def create_or_get_time_spent():
-
-	# POST
 	if request.method == 'POST':
-		if 'token' in request.json:
-			req = request.json
+		""" POST Request Handler.
 
-			# Create new Instances.
-			time = TimeSpent(req['seconds'])
-			user = UserToken.get_or_create(req['token'])
-			host = HostName.get_or_create(req['host'])
+		Notes:
+			Creates new time spent record for the
+			new or existing user.
+		"""
+		# Get Request Data.
+		req = request.json
+		host_name = req['host']
+		time_spent = req['seconds']
+		token = request.headers.get('Authorization')
 
-			# Create Relationships
-			user.time_spent.append(time)
-			time.host.append(host)
+		# Create new Instances.
+		time = TimeSpent(time_spent)
+		user = UserToken.get_or_create(token)
+		host = HostName.get_or_create(host_name)
 
-			# Save to DB.
-			add_then_commit(user, time, host)
-			return jsonify({'success': True}), OK_REQUEST
+		# Create Relationships
+		user.time_spent.append(time)
+		time.host.append(host)
+
+		# Save to DB.
+		add_then_commit(user, time, host)
+		return jsonify({'success': True}), OK_REQUEST
 
 	# GET
 	if request.method == 'GET':
-		user = UserToken.query.get(3)
-		time = user.time_spent.all()
-		hosts = list(set(unique_host_names(time)))
-		return jsonify({'list': hosts})
+		""" GET Request Handler.
+
+		Notes:
+			Grabs all host name records and the time spent,
+			associated with them within the current day.
+		"""
+		# Get Request Data.
+		token = request.headers.get('Authorization')
+
+		# Grab Instance.
+		user = UserToken.get_or_create(token)
+
+		# Query Instance Time Spent on Web.
+		query = db.session.query(
+				HostName.host_name.label('host_name'),
+				func.sum(TimeSpent.seconds).label('elapsed_time')) \
+			.join(host_times, TimeSpent) \
+			.filter(TimeSpent.user_id == user.id) \
+			.group_by(HostName.host_name) \
+			.all()
+		return jsonify({'data': list(results_to_dict(query))})
 	else:
 		return jsonify({'success': False, 'error': 'no Token'}), BAD_REQUEST
