@@ -12,6 +12,7 @@ def add_then_commit(*args):
 	db.session.commit()
 
 
-def unique_host_names(times):
-	for time in times:
-		yield time.host.first().host_name
+# Results helper.
+def results_to_dict(results):
+	for i, (k, v) in enumerate(results):
+		yield {k: int(v)}
