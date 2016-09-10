@@ -12,7 +12,14 @@ def add_then_commit(*args):
 	db.session.commit()
 
 
-# Results helper.
 def results_to_dict(results):
+	""" Generates informative dicts from tuples.
+
+	Args:
+		results: Value of tuples.
+
+	Returns:
+		dict: Value of formatted tuples.
+	"""
 	for i, (k, v) in enumerate(results):
 		yield {k: int(v)}
