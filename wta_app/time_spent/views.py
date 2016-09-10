@@ -1,11 +1,12 @@
+from datetime import date
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 from wta_app import db
 
 from sqlalchemy import func
 
-from wta_app.helpers import add_then_commit, results_to_dict
-from wta_app.models import HostName, TimeSpent, UserToken, host_times
+from wta_app.helpers import add_then_commit
+from wta_app.models import Host, Time, Account, host_times
 
 times = Blueprint('time', __name__, url_prefix='/api')
 
@@ -13,7 +14,7 @@ OK_REQUEST = 200
 BAD_REQUEST = 400
 
 
-@times.route('/time/', methods=(['POST', 'GET']))
+@times.route('/time', methods=(['POST', 'GET']))
 @cross_origin()
 def create_or_get_time_spent():
 	if request.method == 'POST':
@@ -21,7 +22,7 @@ def create_or_get_time_spent():
 
 		Notes:
 			Creates new time spent record for the
-			new or existing user.
+			new or existing account.
 		"""
 		# Get Request Data.
 		req = request.json
@@ -30,16 +31,16 @@ def create_or_get_time_spent():
 		token = request.headers.get('Authorization')
 
 		# Create new Instances.
-		time = TimeSpent(time_spent)
-		user = UserToken.get_or_create(token)
-		host = HostName.get_or_create(host_name)
+		time = Time(time_spent)
+		account = Account.get_or_create(token)
+		host = Host.get_or_create(host_name)
 
 		# Create Relationships
-		user.time_spent.append(time)
+		account.time_spent.append(time)
 		time.host.append(host)
 
 		# Save to DB.
-		add_then_commit(user, time, host)
+		add_then_commit(account, time, host)
 		return jsonify({'success': True}), OK_REQUEST
 
 	# GET
@@ -54,15 +55,26 @@ def create_or_get_time_spent():
 		token = request.headers.get('Authorization')
 
 		# Grab Instance.
-		user = UserToken.get_or_create(token)
+		account = Account.get_or_create(token)
+
+		# Define Presenter.
+		def results_to_dict(results):
+			""" Generates informative dicts from tuples. """
+			for i, (k, v) in enumerate(results):
+				yield {k: int(v)}
+
+		# Get String of Day yyyy-mm-dd
+		today = date.isoformat(date.today())
 
 		# Query Instance Time Spent on Web.
 		query = db.session.query(
-				HostName.host_name.label('host_name'),
-				func.sum(TimeSpent.seconds).label('elapsed_time')) \
-			.join(host_times, TimeSpent) \
-			.filter(TimeSpent.user_id == user.id) \
-			.group_by(HostName.host_name) \
+				Host.host_name,
+				func.sum(Time.seconds)) \
+			.join(host_times, Time) \
+			.filter(Time.account_id == account.id) \
+			.filter(Time.day == today) \
+			.filter(Time.seconds >= 60) \
+			.group_by(Host.host_name) \
 			.all()
 		return jsonify({'data': list(results_to_dict(query))})
 	else:
