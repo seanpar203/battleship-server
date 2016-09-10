@@ -22,7 +22,7 @@ COV = coverage.coverage(
 COV.start()
 
 from wta_app import app, db
-from wta_app.models import UserToken, HostName, TimeSpent
+from wta_app.models import Account, Host, Time
 
 # Create Instances.
 migrate = Migrate(app, db)
