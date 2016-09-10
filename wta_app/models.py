@@ -2,23 +2,23 @@ from wta_app import db
 from datetime import date
 
 
-class UserToken(db.Model):
-	""" Basic token class that stores unique tokens. """
+class Account(db.Model):
+	""" Basic Account class that stores unique tokens. """
 
-	__tablename__ = 'user'
+	__tablename__ = 'account'
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
 	token = db.Column(db.String(), unique=True)
-	time_spent = db.relationship('TimeSpent', backref='user', lazy='dynamic')
+	time_spent = db.relationship('Time', backref='user', lazy='dynamic')
 
 	# Built-in Override Methods.
 	def __init__(self, token):
-		""" Creates new User.
+		""" Creates new Account.
 
 		Notes:
 			This model has a one-to many relationship with the
-			TimeSpent model.
+			Time model.
 
 		Args:
 			token (str): A uuid string.
@@ -29,9 +29,9 @@ class UserToken(db.Model):
 		""" Returns Object string representation.
 
 		Returns:
-			str: String representation of User Object.
+			str: String representation of Account Object.
 		"""
-		return '<User {}>'.format(self.id)
+		return '<Account {}>'.format(self.id)
 
 	@classmethod
 	def get_or_create(cls, token):
@@ -43,6 +43,7 @@ class UserToken(db.Model):
 			return instance
 
 
+""" Many to Many Table for Host & Time. """
 host_times = db.Table(
 		'host_time',
 		db.Column('time_id', db.Integer, db.ForeignKey('time.id')),
@@ -50,8 +51,8 @@ host_times = db.Table(
 )
 
 
-class TimeSpent(db.Model):
-	""" Model for storing Users time spent(host, minutes) """
+class Time(db.Model):
+	""" Model for storing Accounts time spent(host, seconds) """
 
 	__tablename__ = 'time'
 
@@ -61,9 +62,9 @@ class TimeSpent(db.Model):
 	seconds = db.Column(db.BigInteger)
 
 	# Relations
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
 	host = db.relationship(
-			'HostName',
+			'Host',
 			secondary=host_times,
 			backref='time_spent',
 			lazy='dynamic'
@@ -71,12 +72,12 @@ class TimeSpent(db.Model):
 
 	# Built-in Override Methods.
 	def __init__(self, seconds):
-		""" Creates new TimeSpent with amount of minutes.
+		""" Creates new Time with amount of seconds.
 
 		Notes:
 			This model has a many-to-one relationship with the
-			UserToken model and a one-to-many relationship with the
-			HostName model.
+			Account model and a one-to-many relationship with the
+			Host model.
 
 		Args:
 			seconds (int): Value of time spent on active web page.
@@ -88,12 +89,12 @@ class TimeSpent(db.Model):
 		""" Returns Object string representation.
 
 		Returns:
-			str: String representation of TimeSpent Object.
+			str: String representation of Time Object.
 		"""
-		return '<TimeSpent {}>'.format(self.seconds)
+		return '<Time {}>'.format(self.seconds)
 
 
-class HostName(db.Model):
+class Host(db.Model):
 	""" Model for storing User's active tab host name. """
 
 	__tablename__ = 'host'
@@ -108,7 +109,7 @@ class HostName(db.Model):
 
 		Notes:
 			This model has a one-to-many relationship with the
-			TimeSpent model. Using unique strings allow to reduce
+			Time model. Using unique strings allow to reduce
 			the amount of new rows every time a request comes in to
 			only unique host names.
 
@@ -126,7 +127,7 @@ class HostName(db.Model):
 
 	def __str__(self):
 		""" Returns Object string representation. """
-		return '<Host {}>'.format(self.host)
+		return '<Host {}>'.format(self.host_name)
 
 	@classmethod
 	def get_or_create(cls, host_name):
