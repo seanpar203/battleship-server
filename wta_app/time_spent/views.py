@@ -82,6 +82,7 @@ def create_or_get_time_spent():
 			.filter(Time.seconds >= 60) \
 			.group_by(Host.host_name) \
 			.order_by('seconds desc') \
+			.limit(10) \
 			.all()
 		return jsonify({'data': list(results_to_dict(query))})
 	else:
