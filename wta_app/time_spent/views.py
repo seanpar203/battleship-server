@@ -1,11 +1,12 @@
+import random
 from datetime import date
-from flask import Blueprint, jsonify, request
+
 from flask_cors import cross_origin
+from flask import Blueprint, jsonify, request
+from sqlalchemy import func
 from wta_app import db
 
-from sqlalchemy import func
-
-from wta_app.helpers import add_then_commit
+from wta_app.helpers import add_then_commit, list_of_colors, len_of_colors
 from wta_app.models import Host, Time, Account, host_times
 
 times = Blueprint('time', __name__, url_prefix='/api')
@@ -60,8 +61,13 @@ def create_or_get_time_spent():
 		# Define Presenter.
 		def results_to_dict(results):
 			""" Generates informative dicts from tuples. """
-			for i, (k, v) in enumerate(results):
-				yield {k: int(v)}
+			for i, (key, val) in enumerate(results):
+				random_int = random.randrange(len_of_colors)
+				yield {
+					'label': key,
+					'value': int(val),
+					'color': list_of_colors[random_int]
+				}
 
 		# Get String of Day yyyy-mm-dd
 		today = date.isoformat(date.today())
@@ -69,12 +75,13 @@ def create_or_get_time_spent():
 		# Query Instance Time Spent on Web.
 		query = db.session.query(
 				Host.host_name,
-				func.sum(Time.seconds)) \
+				func.sum(Time.seconds).label('seconds')) \
 			.join(host_times, Time) \
 			.filter(Time.account_id == account.id) \
 			.filter(Time.day == today) \
 			.filter(Time.seconds >= 60) \
 			.group_by(Host.host_name) \
+			.order_by('seconds desc') \
 			.all()
 		return jsonify({'data': list(results_to_dict(query))})
 	else:
