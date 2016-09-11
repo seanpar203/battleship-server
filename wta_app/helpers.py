@@ -244,3 +244,5 @@ list_of_colors = [
 	'#274EF1', '#55CD06', '#71CAE3', '#F6DDA7', '#198FFF',
 	'#B26016', '#16BE3C', '#5AD25C', '#54232C', '#B46335'
 ]
+
+len_of_colors = len(list_of_colors)
