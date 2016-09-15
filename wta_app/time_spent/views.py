@@ -74,8 +74,6 @@ def get_time_spent():
 	# Get String of Day yyyy-mm-dd
 	today = date.isoformat(date.today())
 
-	# .filter(Time.day == today) \
-
 	# Query Instance Time Spent on Web.
 	query = db.session.query(
 		Host.host_name,
@@ -83,8 +81,15 @@ def get_time_spent():
 		.join(host_times, Time) \
 		.filter(Time.account_id == account.id) \
 		.filter(Time.seconds >= 60) \
+		.filter(Time.day == today) \
 		.group_by(Host.host_name) \
 		.order_by('seconds desc') \
 		.limit(10) \
 		.all()
 	return jsonify({'data': list(results_to_dict(query))}), OK_REQUEST
+
+
+@times.route('/time/<host_name>', methods=(['GET']))
+@cross_origin()
+def get_specific_times(host_name):
+	return jsonify({'success': True, 'data': host_name}), OK_REQUEST
