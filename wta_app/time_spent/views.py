@@ -57,10 +57,10 @@ def get_time_spent():
 	# Define Presenter.
 	def results_to_dict(results):
 		""" Generates informative dicts from tuples. """
+		random_int = random.randrange(len_of_colors)
 		for i, (key, val) in enumerate(results):
-			random_int = random.randrange(len_of_colors)
 			yield {
-				'label': key,
+				'host': key,
 				'value': int(val),
 				'color': list_of_colors[random_int]
 			}
@@ -92,4 +92,31 @@ def get_time_spent():
 @times.route('/time/<host_name>', methods=(['GET']))
 @cross_origin()
 def get_specific_times(host_name):
-	return jsonify({'success': True, 'data': host_name}), OK_REQUEST
+	# Define Presenter.
+	def results_to_dict(results):
+		""" Generates informative dicts from tuples. """
+		for i, (key, val, day) in enumerate(results):
+			yield {
+				'host': key,
+				'value': int(val / 60),
+				'date': date.isoformat(day)
+			}
+
+	# Get Request Data.
+	token = request.headers.get('Authorization')
+
+	# Grab Instance.
+	account = Account.get_or_create(token)
+
+	# Query Instance Time Spent on Web.
+	query = db.session.query(
+		Host.host_name, func.sum(Time.seconds), Time.day.label('day')) \
+		.join(host_times, Time) \
+		.filter(Time.account_id == account.id) \
+		.filter(Time.seconds >= 60) \
+		.filter(Host.host_name == host_name) \
+		.group_by(Time.day) \
+		.group_by(Host.host_name) \
+		.order_by('day asc') \
+		.all()
+	return jsonify({'data': list(results_to_dict(query))}), OK_REQUEST
