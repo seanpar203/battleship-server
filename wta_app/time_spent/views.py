@@ -57,10 +57,10 @@ def get_time_spent():
 	# Define Presenter.
 	def results_to_dict(results):
 		""" Generates informative dicts from tuples. """
-		random_int = random.randrange(len_of_colors)
 		for i, (key, val) in enumerate(results):
+			random_int = random.randrange(len_of_colors)
 			yield {
-				'host': key,
+				'label': key,
 				'value': int(val),
 				'color': list_of_colors[random_int]
 			}
