@@ -98,7 +98,7 @@ def get_specific_times(host_name):
 		for i, (key, val, day) in enumerate(results):
 			yield {
 				'host': key,
-				'value': int(val / 60),
+				'time': int(val / 60),
 				'date': date.isoformat(day)
 			}
 
