@@ -1,8 +1,6 @@
-from battleship import db
-
-from sqlalchemy import Column
-from sqlalchemy.types import Integer
 from sqlalchemy.dialects.postgresql import ARRAY
+
+from battleship import db
 
 
 class Account(db.Model):
@@ -16,10 +14,10 @@ class Account(db.Model):
 
 	# Relationships
 	games = db.relationship(
-			'Game',
-			lazy='dynamic',
-			backref='account',
-			cascade="all, delete-orphan"
+		'Game',
+		lazy='dynamic',
+		backref='account',
+		cascade="all, delete-orphan"
 	)
 
 	# Built-in Override Methods.
@@ -41,9 +39,9 @@ class Account(db.Model):
 
 	@classmethod
 	def get_or_create(cls, email):
-		user = cls.query.filter_by(email=email).first()
-		if user is not None:
-			return user
+		account = cls.query.filter_by(email=email).first()
+		if account is not None:
+			return account
 		else:
 			instance = cls(email)
 			return instance
@@ -56,20 +54,20 @@ class Game(db.Model):
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
-	won = db.Column(db.BOOLEAN, default=0)
+	won = db.Column(db.BOOLEAN, default=False)
 
 	# Relationships
 	account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
+	# Relationships
+	board = db.relationship(
+		'Board',
+		uselist=False,
+		lazy='select',
+		backref='game',
+		cascade="all, delete-orphan"
+	)
 
 	# Built-in Override Methods.
-	def __init__(self, account):
-		""" Creates new Game.
-
-		Args:
-			account (str): A account model.
-		"""
-		self.account_id = account
-
 	def __str__(self):
 		""" Returns Object string representation.
 
@@ -80,7 +78,7 @@ class Game(db.Model):
 
 
 class Board(db.Model):
-	""" Game model for storing unique game. """
+	""" Board model for storing unique Board. """
 
 	__tablename__ = 'board'
 
@@ -91,21 +89,13 @@ class Board(db.Model):
 	game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
 
 	# Relationships
-	positions = db.relationship(
-			'Position',
-			lazy='dynamic',
-			backref='board',
-			cascade="all, delete-orphan"
+	coords = db.relationship(
+		'Coords',
+		uselist=False,
+		lazy='select',
+		backref='board',
+		cascade="all, delete-orphan"
 	)
-
-	# Built-in Override Methods.
-	def __init__(self, game):
-		""" Creates new Board.
-
-		Args:
-			game (str): A Game model.
-		"""
-		self.game_id = game
 
 	def __str__(self):
 		""" Returns Object string representation.
@@ -116,37 +106,28 @@ class Board(db.Model):
 		return '<Board {}>'.format(self.id)
 
 
-class Position(db.Model):
-	""" Position model for storing positions. """
+class Coords(db.Model):
+	""" Coords model for storing coordinates. """
 
-	__tablename__ = 'position'
+	__tablename__ = 'coord'
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
-	cpu_positions = db.Column(ARRAY(db.Integer))
-	acc_positions = db.Column(ARRAY(db.Integer))
+	cpu_coords = db.Column(ARRAY(db.Integer))
+	acc_coords = db.Column(ARRAY(db.Integer))
 
 	# Relationships
-	board = db.Column(db.Integer, db.ForeignKey('board.id'))
+	board_id = db.Column(db.Integer, db.ForeignKey('board.id'))
 
 	# Built-in Override Methods.
 	def __str__(self):
 		""" Returns Object string representation.
 
 		Returns:
-			str: String representation of Position Object.
+			str: String representation of Coords Object.
 		"""
-		return '<Position {}>'.format(self.position)
+		return '<Coords {}>'.format(self.id)
 
 	# Methods
-	@classmethod
-	def add_position(cls, attr, positions, board):
-		position = cls.query.filter_by(board_id=board.id).first()
-		if position is not None:
-			setattr(position, attr, positions)
-			return position
-		else:
-			instance = cls()
-			setattr(instance, attr, positions)
-			instance.board = board
-			return instance
+	def add_coords(self, attr, coords):
+		setattr(self, attr, coords)
