@@ -1,4 +1,6 @@
 from battleship import db
+from sqlalchemy import Integer
+from sqlalchemy.dialects import postgresql
 
 
 class Account(db.Model):
@@ -75,14 +77,6 @@ class Game(db.Model):
 		return '<Game {}>'.format(self.id)
 
 
-""" Many to Many Table for Board & Position. """
-board_positions = db.Table(
-		'board_position',
-		db.Column('board_id', db.Integer, db.ForeignKey('board.id')),
-		db.Column('position_id', db.Integer, db.ForeignKey('position.id'))
-)
-
-
 class Board(db.Model):
 	""" Game model for storing unique game. """
 
@@ -90,11 +84,17 @@ class Board(db.Model):
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
-	account_positions = db.Column()
-	computer_positions = db.Column()
 
 	# Relationships
 	game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+
+	# Relationships
+	positions = db.relationship(
+			'Position',
+			lazy='dynamic',
+			backref='board',
+			cascade="all, delete-orphan"
+	)
 
 	# Built-in Override Methods.
 	def __init__(self, game):
@@ -121,19 +121,17 @@ class Position(db.Model):
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
-	position = db.Column(db.Integer, unique=True)
-
-	# Relationships
-	game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+	cpu_positions = db.Column(postgresql.ARRAY(Integer))
+	acc_positions = db.Column(postgresql.ARRAY(Integer))
 
 	# Built-in Override Methods.
 	def __init__(self, position):
 		""" Creates new Position.
 
 		Args:
-			position (int): A new position model.
+			position (int): A integer of position.
 		"""
-		self.position_id = position
+		self.position = position
 
 	def __str__(self):
 		""" Returns Object string representation.
