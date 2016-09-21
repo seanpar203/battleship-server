@@ -11,18 +11,18 @@ from flask_script import Manager
 
 COV = coverage.coverage(
 		branch=True,
-		include='wta_app/*',
+		include='battleship/*',
 		omit=[
-			'wta_app/tests/*',
-			'wta_app/config.py',
-			'wta_app/*/__init__.py'
+			'battleship/tests/*',
+			'battleship/config.py',
+			'battleship/*/__init__.py'
 		]
 )
 
 COV.start()
 
-from wta_app import app, db
-from wta_app.models import Account, Host, Time
+from battleship import app, db
+from battleship.models import Account
 
 # Create Instances.
 migrate = Migrate(app, db)
@@ -35,7 +35,7 @@ manager.add_command('db', MigrateCommand)
 @manager.command
 def test():
 	"""Runs the unit tests without test coverage."""
-	tests = unittest.TestLoader().discover('wta_app/', pattern='test*.py')
+	tests = unittest.TestLoader().discover('battleship/', pattern='test*.py')
 	result = unittest.TextTestRunner(verbosity=2).run(tests)
 	if result.wasSuccessful():
 		return 0
@@ -45,7 +45,7 @@ def test():
 @manager.command
 def cov():
 	"""Runs the unit tests with coverage."""
-	tests = unittest.TestLoader().discover('wta_app/', pattern='test*.py')
+	tests = unittest.TestLoader().discover('battleship/', pattern='test*.py')
 	result = unittest.TextTestRunner(verbosity=2).run(tests)
 	if result.wasSuccessful():
 		COV.stop()
