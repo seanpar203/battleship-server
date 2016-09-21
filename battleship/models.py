@@ -1,6 +1,8 @@
 from battleship import db
-from sqlalchemy import Integer
-from sqlalchemy.dialects import postgresql
+
+from sqlalchemy import Column
+from sqlalchemy.types import Integer
+from sqlalchemy.dialects.postgresql import ARRAY
 
 
 class Account(db.Model):
@@ -117,22 +119,17 @@ class Board(db.Model):
 class Position(db.Model):
 	""" Position model for storing positions. """
 
-	__tablename__ = 'Position'
+	__tablename__ = 'position'
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
-	cpu_positions = db.Column(postgresql.ARRAY(Integer))
-	acc_positions = db.Column(postgresql.ARRAY(Integer))
+	cpu_positions = db.Column(ARRAY(db.Integer))
+	acc_positions = db.Column(ARRAY(db.Integer))
+
+	# Relationships
+	board = db.Column(db.Integer, db.ForeignKey('board.id'))
 
 	# Built-in Override Methods.
-	def __init__(self, position):
-		""" Creates new Position.
-
-		Args:
-			position (int): A integer of position.
-		"""
-		self.position = position
-
 	def __str__(self):
 		""" Returns Object string representation.
 
@@ -140,3 +137,16 @@ class Position(db.Model):
 			str: String representation of Position Object.
 		"""
 		return '<Position {}>'.format(self.position)
+
+	# Methods
+	@classmethod
+	def add_position(cls, attr, positions, board):
+		position = cls.query.filter_by(board_id=board.id).first()
+		if position is not None:
+			setattr(position, attr, positions)
+			return position
+		else:
+			instance = cls()
+			setattr(instance, attr, positions)
+			instance.board = board
+			return instance
