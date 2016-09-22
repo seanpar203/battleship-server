@@ -1,5 +1,9 @@
 from battleship import db
 
+CREATED = 201
+OK_REQUEST = 200
+BAD_REQUEST = 400
+
 
 def add_then_commit(*args):
 	""" Adds arbitrary amount and saves to db
