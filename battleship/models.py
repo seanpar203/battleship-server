@@ -105,6 +105,16 @@ class Board(db.Model):
 		"""
 		return '<Board {}>'.format(self.id)
 
+	@classmethod
+	def get_or_create(cls, game):
+		board = cls.query.filter_by(game_id=game.id).first()
+		if board is not None:
+			return board
+		else:
+			instance = cls()
+			game.board = instance
+			return instance
+
 
 class Coords(db.Model):
 	""" Coords model for storing unique coordinates for a single Board. """
@@ -131,3 +141,13 @@ class Coords(db.Model):
 	# Methods
 	def add_coords(self, attr, coords):
 		setattr(self, attr, coords)
+
+	@classmethod
+	def get_or_create(cls, board):
+		coords = cls.query.filter_by(board_id=board.id).first()
+		if coords is not None:
+			return coords
+		else:
+			instance = cls()
+			board.coords = instance
+			return instance
