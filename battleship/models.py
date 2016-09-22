@@ -107,7 +107,7 @@ class Board(db.Model):
 
 
 class Coords(db.Model):
-	""" Coords model for storing coordinates. """
+	""" Coords model for storing unique coordinates for a single Board. """
 
 	__tablename__ = 'coord'
 
