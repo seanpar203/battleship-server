@@ -10,7 +10,7 @@ class Account(db.Model):
 
 	# Attributes
 	id = db.Column(db.Integer, primary_key=True)
-	email = db.Column(db.String(), unique=True)
+	user_name = db.Column(db.String(), unique=True)
 
 	# Relationships
 	games = db.relationship(
@@ -21,13 +21,13 @@ class Account(db.Model):
 	)
 
 	# Built-in Override Methods.
-	def __init__(self, email):
+	def __init__(self, user_name):
 		""" Creates new Account.
 
 		Args:
-			email (str): A email address.
+			user_name (str): A unique user name.
 		"""
-		self.email = email
+		self.user_name = user_name
 
 	def __str__(self):
 		""" Returns Object string representation.
@@ -35,15 +35,15 @@ class Account(db.Model):
 		Returns:
 			str: String representation of Account Object.
 		"""
-		return '<Account {}>'.format(self.email)
+		return '<Account {}>'.format(self.user_name)
 
 	@classmethod
-	def get_or_create(cls, email):
-		account = cls.query.filter_by(email=email).first()
+	def get_or_create(cls, user_name):
+		account = cls.query.filter_by(user_name=user_name).first()
 		if account is not None:
 			return account
 		else:
-			instance = cls(email)
+			instance = cls(user_name)
 			return instance
 
 

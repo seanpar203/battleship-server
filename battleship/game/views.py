@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 
-from battleship.helpers import add_then_commit, OK_REQUEST, BAD_REQUEST, CREATED
+from battleship.helpers import BAD_REQUEST, CREATED, add_then_commit
 from battleship.models import Account, Game
 
 # Create new flask blueprint
@@ -16,11 +16,17 @@ def create_game():
 	Returns:
 		dict: JSON Success or Error response.
 	"""
-	if 'email' in request.json:
-		account = Account.get_or_create(email=request.json['email'])
+	if 'user_name' in request.json:
+		account = Account.get_or_create(request.json['user_name'])
 		new_game = Game()
 		account.games.append(new_game)
 		add_then_commit(account)
 		return jsonify({'success': True, 'game_id': new_game.id}), CREATED
 	else:
 		return jsonify({'success': False}), BAD_REQUEST
+
+
+@game.route('/game', methods=['GET'])
+@cross_origin()
+def test_get():
+	return jsonify({'success': True}), CREATED
