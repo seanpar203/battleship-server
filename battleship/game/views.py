@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 
 from battleship.helpers import BAD_REQUEST, CREATED, UNAUTHORIZED, \
 	add_then_commit
-from battleship.models import Account, Game, Coords
+from battleship.models import Account, Coords, Game
 
 # Create new flask blueprint
 game = Blueprint('game', __name__)
@@ -50,15 +50,12 @@ def game_coords(id):
 		if this_game.account.id != account.id:
 			return jsonify({'success': False}), UNAUTHORIZED
 		else:
-			# Get or create board for unique game.
-			board = Board.get_or_create(this_game)
-
-			# Get or create coordinated for unique board.
-			coords = Coords.get_or_create(board)
+			# Get or create coordinated for unique game.
+			coords = Coords.get_or_create(this_game)
 			coords.add_coords(req['player'], req['coords'])
 
 			# Save new data.
-			add_then_commit(board, coords)
+			add_then_commit(coords)
 			return jsonify({'success': True}), CREATED
 	else:
 		return jsonify({'success': False}), BAD_REQUEST
