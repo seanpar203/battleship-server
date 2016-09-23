@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 
 from battleship.helpers import BAD_REQUEST, CREATED, UNAUTHORIZED, \
 	add_then_commit
-from battleship.models import Account, Board, Coords, Game
+from battleship.models import Account, Game, Coords
 
 # Create new flask blueprint
 game = Blueprint('game', __name__)

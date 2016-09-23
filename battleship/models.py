@@ -59,8 +59,8 @@ class Game(db.Model):
 	# Relationships
 	account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
 	# Relationships
-	board = db.relationship(
-		'Board',
+	coords = db.relationship(
+		'Coords',
 		uselist=False,
 		lazy='select',
 		backref='game',
@@ -77,47 +77,8 @@ class Game(db.Model):
 		return '<Game {}>'.format(self.id)
 
 
-class Board(db.Model):
-	""" Board model for storing unique Board. """
-
-	__tablename__ = 'board'
-
-	# Attributes
-	id = db.Column(db.Integer, primary_key=True)
-
-	# Relationships
-	game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
-
-	# Relationships
-	coords = db.relationship(
-		'Coords',
-		uselist=False,
-		lazy='select',
-		backref='board',
-		cascade="all, delete-orphan"
-	)
-
-	def __str__(self):
-		""" Returns Object string representation.
-
-		Returns:
-			str: String representation of Board Object.
-		"""
-		return '<Board {}>'.format(self.id)
-
-	@classmethod
-	def get_or_create(cls, game):
-		board = cls.query.filter_by(game_id=game.id).first()
-		if board is not None:
-			return board
-		else:
-			instance = cls()
-			game.board = instance
-			return instance
-
-
 class Coords(db.Model):
-	""" Coords model for storing unique coordinates for a single Board. """
+	""" Coords model for storing unique coordinates for a single game. """
 
 	__tablename__ = 'coord'
 
@@ -127,7 +88,7 @@ class Coords(db.Model):
 	acc_coords = db.Column(ARRAY(db.Integer))
 
 	# Relationships
-	board_id = db.Column(db.Integer, db.ForeignKey('board.id'))
+	game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
 
 	# Built-in Override Methods.
 	def __str__(self):
@@ -143,11 +104,11 @@ class Coords(db.Model):
 		setattr(self, attr, coords)
 
 	@classmethod
-	def get_or_create(cls, board):
-		coords = cls.query.filter_by(board_id=board.id).first()
+	def get_or_create(cls, game):
+		coords = cls.query.filter_by(game_id=game.id).first()
 		if coords is not None:
 			return coords
 		else:
 			instance = cls()
-			board.coords = instance
+			game.coords = instance
 			return instance

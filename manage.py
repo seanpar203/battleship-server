@@ -22,7 +22,7 @@ COV = coverage.coverage(
 COV.start()
 
 from battleship import app, db
-from battleship.models import Account, Game, Board, Coords
+from battleship.models import Account, Game, Coords
 
 # Create Instances.
 migrate = Migrate(app, db)
