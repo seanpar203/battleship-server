@@ -13,3 +13,8 @@ app.config.from_object(app_settings)
 
 # DB Connection
 db = SQLAlchemy(app)
+
+# Blueprints
+from battleship.game.views import game
+
+app.register_blueprint(game, url_prefix='/api')
