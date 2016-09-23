@@ -30,9 +30,9 @@ def create_game():
 		return jsonify({'success': False}), BAD_REQUEST
 
 
-@game.route('/game/<game_id>/coords', methods=['POST'])
+@game.route('/game/<id>/coords', methods=['POST'])
 @cross_origin()
-def game_coords(game_id):
+def game_coords(id):
 	""" Add user or cpu positions to new board game.
 
 	Returns:
@@ -44,14 +44,14 @@ def game_coords(game_id):
 
 		# Gather Account & Game related info.
 		account = Account.get_or_create(req['user_name'])
-		this_game = Game.query.filter_by(id=game_id).first()
+		this_game = Game.query.filter_by(id=id).first()
 
 		# Verify request is genuine.
 		if this_game.account.id != account.id:
 			return jsonify({'success': False}), UNAUTHORIZED
 		else:
 			# Get or create board for unique game.
-			board = Board.get_or_create(game)
+			board = Board.get_or_create(this_game)
 
 			# Get or create coordinated for unique board.
 			coords = Coords.get_or_create(board)
