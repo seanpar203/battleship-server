@@ -40,10 +40,14 @@ def delete_game(id):
 	Returns:
 		dict: JSON Success or Error response.
 	"""
-	print(id)
-	game = Game.query.filter_by(id=id).delete()
-	db.session.commit()
-	return jsonify({'success': True}), OK_REQUEST
+
+	this_game = Game.query.filter_by(id=id).first()
+	if this_game is not None:
+		Game.query.filter_by(id=id).delete()
+		db.session.commit()
+		return jsonify({'success': True}), OK_REQUEST
+	else:
+		return jsonify({'success': False}), BAD_REQUEST
 
 
 @game.route('/game/<id>/coords', methods=['PUT'])
