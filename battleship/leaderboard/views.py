@@ -18,11 +18,27 @@ def get_leaderboard():
 	Returns:
 		list: JSON Success or Error response.
 	"""
+
+	def presenter(data):
+		""" Formats tuple into list of dicts.
+
+		Args:
+			data: List of tuples returned from query.
+
+		Returns:
+			list: Array of dict values.
+		"""
+		for i, (k, v) in enumerate(data):
+			yield {
+				'user_name': k,
+				'wins': int(v)
+			}
+
+	# Grab all user name & the count of wins.
 	query = db.session.query(
 			Account.user_name, func.count(Game.won).label('won')) \
 		.filter(Game.won == True) \
 		.group_by(Account.user_name) \
 		.order_by('won desc') \
 		.all()
-	print(query)
-	return jsonify({'success': True, 'leader_board': query}), OK_REQUEST
+	return jsonify({'board': list(presenter(query))}), OK_REQUEST
