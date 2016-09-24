@@ -16,5 +16,7 @@ db = SQLAlchemy(app)
 
 # Blueprints
 from battleship.game.views import game
+from battleship.leaderboard.views import board
 
 app.register_blueprint(game, url_prefix='/api')
+app.register_blueprint(board, url_prefix='/api')

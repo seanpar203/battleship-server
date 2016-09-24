@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 
-from battleship.helpers import BAD_REQUEST, CREATED, UNAUTHORIZED, \
+from battleship.helpers import OK_REQUEST, BAD_REQUEST, CREATED, \
+	UNAUTHORIZED, \
 	add_then_commit
 from battleship.models import Account, Coords, Game
 
@@ -57,5 +58,35 @@ def game_coords(id):
 			# Save new data.
 			add_then_commit(coords)
 			return jsonify({'success': True}), CREATED
+	else:
+		return jsonify({'success': False}), BAD_REQUEST
+
+
+@game.route('/game/<id>/results', methods=['POST'])
+@cross_origin()
+def game_results(id):
+	""" Add user or cpu positions to new board game.
+
+	Returns:
+		dict: JSON Success or Error response.
+	"""
+	if 'user_name' in request.json:
+		# Re-assign request object.
+		req = request.get_json()
+
+		# Gather Account & Game related info.
+		account = Account.get_or_create(req['user_name'])
+		this_game = Game.query.filter_by(id=id).first()
+
+		# Verify request is genuine.
+		if this_game.account.id != account.id:
+			return jsonify({'success': False}), UNAUTHORIZED
+		else:
+			# Get or create coordinated for unique game.
+			this_game.won = req['won']
+
+			# Save new data.
+			add_then_commit(this_game)
+			return jsonify({'success': True}), OK_REQUEST
 	else:
 		return jsonify({'success': False}), BAD_REQUEST
