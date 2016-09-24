@@ -31,7 +31,7 @@ def create_game():
 		return jsonify({'success': False}), BAD_REQUEST
 
 
-@game.route('/game/<id>/coords', methods=['POST'])
+@game.route('/game/<id>/coords', methods=['PUT'])
 @cross_origin()
 def game_coords(id):
 	""" Add user or cpu positions to new board game.
@@ -62,7 +62,7 @@ def game_coords(id):
 		return jsonify({'success': False}), BAD_REQUEST
 
 
-@game.route('/game/<id>/results', methods=['POST'])
+@game.route('/game/<id>/results', methods=['PUT'])
 @cross_origin()
 def game_results(id):
 	""" Add user or cpu positions to new board game.
