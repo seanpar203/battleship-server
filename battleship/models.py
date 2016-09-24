@@ -14,10 +14,10 @@ class Account(db.Model):
 
 	# Relationships
 	games = db.relationship(
-		'Game',
-		lazy='dynamic',
-		backref='account',
-		cascade="all, delete-orphan"
+			'Game',
+			lazy='dynamic',
+			backref='account',
+			passive_deletes=True
 	)
 
 	# Built-in Override Methods.
@@ -57,14 +57,17 @@ class Game(db.Model):
 	won = db.Column(db.BOOLEAN, default=False)
 
 	# Relationships
-	account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
+	account_id = db.Column(
+			db.Integer,
+			db.ForeignKey('account.id', ondelete='CASCADE')
+	)
 	# Relationships
 	coords = db.relationship(
-		'Coords',
-		uselist=False,
-		lazy='select',
-		backref='game',
-		cascade="all, delete-orphan"
+			'Coords',
+			uselist=False,
+			lazy='select',
+			backref='game',
+			passive_deletes=True
 	)
 
 	# Built-in Override Methods.
@@ -88,7 +91,10 @@ class Coords(db.Model):
 	acc_coords = db.Column(ARRAY(db.Integer))
 
 	# Relationships
-	game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+	game_id = db.Column(
+			db.Integer,
+			db.ForeignKey('game.id', ondelete='CASCADE')
+	)
 
 	# Built-in Override Methods.
 	def __str__(self):

@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
+from battleship import db
 
 from battleship.helpers import OK_REQUEST, BAD_REQUEST, CREATED, \
 	UNAUTHORIZED, \
@@ -31,10 +32,24 @@ def create_game():
 		return jsonify({'success': False}), BAD_REQUEST
 
 
+@game.route('/game/<id>', methods=['DELETE'])
+@cross_origin()
+def delete_game(id):
+	""" Delete game.
+
+	Returns:
+		dict: JSON Success or Error response.
+	"""
+	print(id)
+	game = Game.query.filter_by(id=id).delete()
+	db.session.commit()
+	return jsonify({'success': True}), OK_REQUEST
+
+
 @game.route('/game/<id>/coords', methods=['PUT'])
 @cross_origin()
 def game_coords(id):
-	""" Add user or cpu positions to new board game.
+	""" Add user or cpu coordinates to new game.
 
 	Returns:
 		dict: JSON Success or Error response.
@@ -65,7 +80,7 @@ def game_coords(id):
 @game.route('/game/<id>/results', methods=['PUT'])
 @cross_origin()
 def game_results(id):
-	""" Add user or cpu positions to new board game.
+	""" Update game results.
 
 	Returns:
 		dict: JSON Success or Error response.
