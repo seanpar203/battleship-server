@@ -81,7 +81,7 @@ def game_coords(id):
 		return jsonify({'success': False}), BAD_REQUEST
 
 
-@game.route('/game/<id>/results', methods=['PUT'])
+@game.route('/game/<id>/won', methods=['PUT'])
 @cross_origin()
 def game_results(id):
 	""" Update game results.
@@ -102,7 +102,7 @@ def game_results(id):
 			return jsonify({'success': False}), UNAUTHORIZED
 		else:
 			# Get or create coordinated for unique game.
-			this_game.won = req['won']
+			this_game.won = True
 
 			# Save new data.
 			add_then_commit(this_game)
