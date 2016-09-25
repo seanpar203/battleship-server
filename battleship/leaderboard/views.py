@@ -37,6 +37,7 @@ def get_leaderboard():
 	# Grab all user name & the count of wins.
 	query = db.session.query(
 			Account.user_name, func.count(Game.won).label('won')) \
+		.join(Game) \
 		.filter(Game.won == True) \
 		.group_by(Account.user_name) \
 		.order_by('won desc') \
